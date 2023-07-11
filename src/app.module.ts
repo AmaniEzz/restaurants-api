@@ -9,7 +9,7 @@ import { AuthModule } from './auth/auth.module';
 @Module({
   imports: [
     ConfigModule.forRoot(),
-    MongooseModule.forRoot(process.env.MONGODB_URI),
+    MongooseModule.forRoot(process.env.DATABASE_URL),
     UserModule,
     CityModule,
     RestaurantModule,
