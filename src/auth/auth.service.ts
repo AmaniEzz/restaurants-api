@@ -1,16 +1,10 @@
-import {
-  BadRequestException,
-  HttpException,
-  HttpStatus,
-  Injectable,
-} from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { UserService } from '../users/services/users.service';
 import { User } from '../users/user.schema';
 import { AuthResponse } from './dto/auth-response.dto';
 import { HashService } from 'src/users/services/hash.service';
 import { JwtPayload } from './strategy/jwt.strategy';
-import appConfig from 'src/config/app.config';
 
 @Injectable()
 export class AuthService {
@@ -48,8 +42,8 @@ export class AuthService {
 
   private generateAccessToken(payload: JwtPayload): Promise<string> {
     return this.jwtService.signAsync(payload, {
-      secret: appConfig().JWTSecret,
-      expiresIn: appConfig().accessTokenExpiresIn,
+      secret: process.env.JWT_SECRET,
+      expiresIn: '1d',
     });
   }
 }

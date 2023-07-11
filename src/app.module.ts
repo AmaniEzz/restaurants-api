@@ -5,12 +5,11 @@ import { UserModule } from './users/users.module';
 import { CityModule } from './cities/city.module';
 import { RestaurantModule } from './restaurants/restaurants.module';
 import { AuthModule } from './auth/auth.module';
-import appConfig from './config/app.config';
 
 @Module({
   imports: [
     ConfigModule.forRoot(),
-    MongooseModule.forRoot(appConfig().mongo_url),
+    MongooseModule.forRoot(process.env.MONGODB_URI),
     UserModule,
     CityModule,
     RestaurantModule,

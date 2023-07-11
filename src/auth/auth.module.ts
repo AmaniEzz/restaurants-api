@@ -18,14 +18,9 @@ import { UserSchema } from 'src/users/user.schema';
     UserModule,
     PassportModule,
     MongooseModule.forFeature([{ name: 'User', schema: UserSchema }]),
-    JwtModule.registerAsync({
-      imports: [ConfigModule],
-      useFactory: async (configService: ConfigService) => ({
-        secret: configService.get<string>('JWT_SECRET'),
-      }),
-      inject: [ConfigService],
+    JwtModule.register({
+      secret: process.env.JWT_SECRET,
     }),
-    ConfigModule,
   ],
   controllers: [AuthController],
   providers: [
