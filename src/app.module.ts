@@ -4,13 +4,13 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 const envModule = ConfigModule.forRoot({
   isGlobal: true,
 });
-
 import { MongooseModule } from '@nestjs/mongoose';
 import { UserModule } from './users/users.module';
 import { CityModule } from './cities/city.module';
 import { RestaurantModule } from './restaurants/restaurants.module';
 import { AuthModule } from './auth/auth.module';
-import config from './config/config';
+import { ScheduleModule } from '@nestjs/schedule';
+import { CronjobsModule } from './cronjobs/cronjobs.module';
 
 @Module({
   imports: [
@@ -23,6 +23,8 @@ import config from './config/config';
       inject: [ConfigService],
     }),
     UserModule,
+    ScheduleModule.forRoot(),
+    CronjobsModule,
     CityModule,
     RestaurantModule,
     AuthModule,

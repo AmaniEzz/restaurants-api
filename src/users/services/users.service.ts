@@ -37,6 +37,10 @@ export class UserService {
     return this.userModel.findOne({ email }).exec();
   }
 
+  async findAll(): Promise<User[]> {
+    return this.userModel.find().lean();
+  }
+
   async findWithoutPassword(email: string): Promise<Omit<User, 'password'>> {
     const user = (await this.userModel.findOne({ email })).toJSON();
     if (!user) {
