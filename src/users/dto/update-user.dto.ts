@@ -14,8 +14,4 @@ export class UpdateUserDto {
     description: 'User email',
   })
   readonly email?: string;
-
-  @IsString()
-  @IsOptional()
-  readonly refreshToken?: string;
 }

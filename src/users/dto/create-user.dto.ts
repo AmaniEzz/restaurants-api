@@ -9,7 +9,7 @@ import {
 
 export class CreateUserDto {
   @ApiProperty({
-    example: 'John Doe',
+    example: 'Admin1',
     description: 'User name',
     required: true,
   })
@@ -19,7 +19,7 @@ export class CreateUserDto {
   name: string;
 
   @ApiProperty({
-    example: 'johndoe@example.com',
+    example: 'admin1@example.com',
     description: 'User email',
     required: true,
   })

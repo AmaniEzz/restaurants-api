@@ -1,22 +1,32 @@
 import {
   Controller,
-  Get,
   Post,
-  Req,
+  UnauthorizedException,
   UseGuards,
   UsePipes,
   ValidationPipe,
 } from '@nestjs/common';
-import { ApiBody, ApiOkResponse, ApiOperation, ApiTags } from '@nestjs/swagger';
+import {
+  ApiBody,
+  ApiNotFoundResponse,
+  ApiOkResponse,
+  ApiOperation,
+  ApiTags,
+  ApiUnauthorizedResponse,
+} from '@nestjs/swagger';
 import { AuthService } from './auth.service';
 import { LocalAuthGuard } from './guards/local-auth.guard';
 import { AuthResponse } from './dto/auth-response.dto';
-import { LoginRequestDto } from './dto/auth.dto';
+import { LoginRequestDto } from './dto/login-request.dto';
 import { User } from 'src/users/user.schema';
-import { CurrentUser } from './decorator/current-user.decorator';
+import { CurrentUser } from '../common/decorator/current-user.decorator';
 
 @ApiTags('auth')
 @Controller('auth')
+@ApiNotFoundResponse({
+  description: 'User not found',
+})
+@ApiUnauthorizedResponse({ description: 'Unauthorized' })
 export class AuthController {
   constructor(private authService: AuthService) {}
 

@@ -1,10 +1,17 @@
-import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
+import {
+  HttpException,
+  HttpStatus,
+  Injectable,
+  NotFoundException,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { UserService } from '../users/services/users.service';
 import { User } from '../users/user.schema';
 import { AuthResponse } from './dto/auth-response.dto';
 import { HashService } from 'src/users/services/hash.service';
 import { JwtPayload } from './strategy/jwt.strategy';
+import { error } from 'console';
 
 @Injectable()
 export class AuthService {
@@ -16,34 +23,34 @@ export class AuthService {
 
   async validateUser(email: string, pass: string): Promise<any> {
     const user = await this.userService.findByEmail(email);
-    if (!user)
-      throw new HttpException('User does not exist', HttpStatus.UNAUTHORIZED);
+    if (!user) throw new NotFoundException('User does not exist');
 
     const passwordMatches = await this.hashService.comparePassword(
       pass,
       user.password,
     );
     if (!passwordMatches)
-      throw new HttpException('Password is incorrect', HttpStatus.UNAUTHORIZED);
+      throw new UnauthorizedException('Password is incorrect');
 
     return user;
   }
 
   async login(user: User): Promise<AuthResponse> {
     const payload = {
-      sub: user._id,
+      sub: user.id,
       email: user.email,
       role: user.role,
     };
-    const accessToken = await this.generateAccessToken(payload);
-
+    let accessToken: string;
+    try {
+      accessToken = await this.generateAccessToken(payload);
+    } catch (error) {
+      throw new UnauthorizedException('Failed to Generate Access Token');
+    }
     return { accessToken };
   }
 
   private generateAccessToken(payload: JwtPayload): Promise<string> {
-    return this.jwtService.signAsync(payload, {
-      secret: process.env.JWT_SECRET,
-      expiresIn: '1d',
-    });
+    return this.jwtService.signAsync(payload);
   }
 }

@@ -1,15 +1,14 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { ApiProperty } from '@nestjs/swagger';
-import { randomUUID } from 'crypto';
 import { Document } from 'mongoose';
 import { Role } from 'src/users/enums/role.enum';
 
+export type UserDocument = User & Document;
+
 @Schema({ timestamps: true, versionKey: false })
-export class User extends Document {
-  @ApiProperty({
-    description: 'The ID of the user',
-  })
-  _id: string;
+export class User {
+  @ApiProperty()
+  id: string;
 
   @ApiProperty({
     example: 'Jeanpier',
@@ -50,3 +49,11 @@ export class User extends Document {
 }
 
 export const UserSchema = SchemaFactory.createForClass(User);
+
+UserSchema.set('toJSON', {
+  virtuals: true,
+  versionKey: false,
+  transform: function (doc, ret) {
+    delete ret._id;
+  },
+});

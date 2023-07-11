@@ -1,8 +1,7 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { City } from 'src/cities/city.schema';
-import mongoose, { Document, HydratedDocument } from 'mongoose';
+import mongoose, { Document } from 'mongoose';
 import { ApiProperty } from '@nestjs/swagger';
-import { randomUUID } from 'crypto';
 
 class Location {
   @ApiProperty()
@@ -12,14 +11,11 @@ class Location {
   coordinates: [number, number];
 }
 
+export type RestaurantDocument = Restaurant & Document;
+
 @Schema({ timestamps: true, versionKey: false })
-export class Restaurant extends Document {
+export class Restaurant {
   @ApiProperty()
-  @Prop({
-    required: true,
-    index: { unique: true },
-    default: () => randomUUID(),
-  })
   id: string;
 
   @ApiProperty()
@@ -51,3 +47,11 @@ export class Restaurant extends Document {
 }
 
 export const RestaurantSchema = SchemaFactory.createForClass(Restaurant);
+
+RestaurantSchema.set('toJSON', {
+  virtuals: true,
+  versionKey: false,
+  transform: function (doc, ret) {
+    delete ret._id;
+  },
+});

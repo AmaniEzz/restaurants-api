@@ -27,7 +27,7 @@ export class CreateRestaurantDto {
   email: string;
 
   @ApiProperty({
-    example: '60d9e1a05b69af1234567890',
+    example: '64ac604975079dea6685b08b',
     description: 'The ID of the city where the restaurant is located',
   })
   @IsString()

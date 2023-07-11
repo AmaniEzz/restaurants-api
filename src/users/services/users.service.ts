@@ -7,7 +7,7 @@ import {
 } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
-import { User } from '../user.schema';
+import { User, UserDocument } from '../user.schema';
 import { CreateUserDto } from '../dto/create-user.dto';
 import { UpdateUserDto } from '../dto/update-user.dto';
 import { HashService } from './hash.service';
@@ -15,18 +15,17 @@ import { HashService } from './hash.service';
 @Injectable()
 export class UserService {
   constructor(
-    @InjectModel(User.name) private readonly userModel: Model<User>,
+    @InjectModel(User.name) private readonly userModel: Model<UserDocument>,
     private hashService: HashService,
   ) {}
 
   async create(createUserDto: CreateUserDto) {
     const createUser = new this.userModel(createUserDto);
-    console.log(createUser);
     // check if user exists
     const user = await this.findByEmail(createUserDto.email);
 
     if (user) {
-      throw new HttpException('User Already exists', HttpStatus.BAD_REQUEST);
+      throw new BadRequestException('User Already exists');
     }
     // Hash Password
     createUser.password = await this.hashService.hash(createUser.password);
@@ -35,24 +34,16 @@ export class UserService {
   }
 
   async findByEmail(email: string): Promise<User | null> {
-    return await this.userModel.findOne({ email }).lean();
+    return this.userModel.findOne({ email }).exec();
   }
 
-  async findWithoutPassword(
-    email: string,
-  ): Promise<Omit<User, 'password'> | null> {
-    const user = await this.userModel.findOne({ email }).lean();
-    if (user) {
-      const { password, ...rest } = user;
-
-      return rest;
+  async findWithoutPassword(email: string): Promise<Omit<User, 'password'>> {
+    const user = (await this.userModel.findOne({ email })).toJSON();
+    if (!user) {
+      throw new NotFoundException('User Not Found');
     }
-    return null;
-  }
-
-  async findById(id: string): Promise<Omit<User, 'password'> | null> {
-    const { password, ...user } = await this.userModel.findById(id).lean();
-    return user;
+    const { password, ...rest } = user;
+    return rest;
   }
 
   async update(id: string, user: UpdateUserDto): Promise<User> {
@@ -60,10 +51,7 @@ export class UserService {
       .findByIdAndUpdate(id, user, { new: true })
       .lean();
     if (!updatedUser) {
-      throw new HttpException(
-        'Update Failed: User Not Found',
-        HttpStatus.NOT_FOUND,
-      );
+      throw new NotFoundException('User Not Found');
     }
     return updatedUser;
   }

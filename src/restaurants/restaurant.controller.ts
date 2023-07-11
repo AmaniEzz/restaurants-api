@@ -19,29 +19,33 @@ import {
   ApiBody,
   ApiParam,
   ApiCreatedResponse,
-  ApiNoContentResponse,
   ApiOkResponse,
   ApiOperation,
   ApiTags,
   ApiQuery,
+  ApiNotFoundResponse,
+  ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
 import { RestaurantService } from './restaurant.service';
 import { Restaurant } from './restaurant.schema';
-import { AuthGuard } from '@nestjs/passport';
-import { Roles } from 'src/auth/decorator/role.decorator';
+import { Roles } from 'src/common/decorator/role.decorator';
 import { Role } from 'src/users/enums/role.enum';
 import { AccessTokenAuthGuard } from 'src/auth/guards/jwt-auth.guard';
 import { RoleGuard } from 'src/auth/guards/role.guard';
-import { PaginationParams } from 'src/common/pagination/pagination.params';
-import { CreateRestaurantDto, UpdateRestaurantDto } from './dto';
+import {
+  CreateRestaurantDto,
+  UpdateRestaurantDto,
+  StatsResponseDto,
+} from './dto/';
 import { ApiPaginatedResponse } from 'src/common/pagination/api-pagination.response';
-import { IsOptional } from 'class-validator';
 import {
   PaginatedDto,
   PaginatedResponseDto,
 } from 'src/common/pagination/pagination.dto';
 
 @ApiTags('restaurants')
+@ApiNotFoundResponse({ description: 'Restaurant Not Found' })
+@ApiUnauthorizedResponse({ description: 'Unauthorized' })
 @Controller('restaurants')
 export class RestaurantController {
   constructor(private readonly restaurantService: RestaurantService) {}
@@ -130,7 +134,10 @@ export class RestaurantController {
   @Roles(Role.ADMIN)
   @UseGuards(AccessTokenAuthGuard, RoleGuard)
   @ApiOperation({ summary: 'Get restaurant statistics by city' })
-  @ApiOkResponse({ description: 'Restaurant statistics', type: Object })
+  @ApiOkResponse({
+    description: 'Restaurant statistics',
+    type: StatsResponseDto,
+  })
   async getRestaurantStatisticsByCity(): Promise<any> {
     return this.restaurantService.getRestaurantStatistics();
   }
@@ -152,7 +159,6 @@ export class RestaurantController {
     description: 'Restaurant updated successfully',
     type: Restaurant,
   })
-  @ApiNoContentResponse({ description: 'Restaurant not found' })
   @ApiBody({ type: UpdateRestaurantDto })
   @ApiParam({ name: 'id', description: 'Restaurant ID', type: String })
   @Roles(Role.ADMIN)
@@ -173,7 +179,6 @@ export class RestaurantController {
     description: 'Restaurant deleted successfully',
     type: Restaurant,
   })
-  @ApiNoContentResponse({ description: 'Restaurant not found' })
   @ApiParam({ name: 'id', description: 'Restaurant ID', type: String })
   async delete(@Param('id') id: string): Promise<Restaurant | null> {
     return this.restaurantService.delete(id);

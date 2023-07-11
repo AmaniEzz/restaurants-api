@@ -12,21 +12,24 @@ import {
   ApiBearerAuth,
   ApiBody,
   ApiCreatedResponse,
-  ApiNoContentResponse,
+  ApiNotFoundResponse,
   ApiOkResponse,
   ApiOperation,
   ApiTags,
+  ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
 import { CityService } from './city.service';
 import { City } from './city.schema';
 import { CreateCityDto } from './dto/create-city.dto';
-import { Roles } from 'src/auth/decorator/role.decorator';
+import { Roles } from 'src/common/decorator/role.decorator';
 import { Role } from 'src/users/enums/role.enum';
 import { AccessTokenAuthGuard } from 'src/auth/guards/jwt-auth.guard';
 import { RoleGuard } from 'src/auth/guards/role.guard';
 
 @ApiTags('cities')
 @Controller('cities')
+@ApiNotFoundResponse({ description: 'City not found' })
+@ApiUnauthorizedResponse({ description: 'Unauthorized' })
 export class CityController {
   constructor(private readonly cityService: CityService) {}
 
@@ -45,7 +48,6 @@ export class CityController {
   @UseGuards(AccessTokenAuthGuard, RoleGuard)
   @ApiOperation({ summary: 'Get city by ID' })
   @ApiOkResponse({ description: 'City found', type: City })
-  @ApiNoContentResponse({ description: 'City not found' })
   @Get(':id')
   async findById(@Param('id') id: string): Promise<City | null> {
     return await this.cityService.findById(id);
