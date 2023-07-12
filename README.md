@@ -50,13 +50,11 @@ $ npm run start:prod
 
 ```
 $ docker-compose up --build
-
-
 ```
 
 ## Swagger
 
-After running the app navigate to `http://localhost:3000/api`
+After running the app navigate to [http://localhost:3000/api](http://localhost:3000/api)
 
 ## License
 
