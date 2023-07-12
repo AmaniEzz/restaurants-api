@@ -27,6 +27,9 @@
 A Simple Restaurants Lookup API where system admin can add , update and delete restaurants. Users can find the nearest restaurants from a given location (point),
 and search on restaurants names.
 
+See Deployed App here [http://54.76.214.75:3000/api](http://54.76.214.75:3000/api)
+
+
 ## Installation
 
 ```bash
