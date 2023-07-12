@@ -46,6 +46,18 @@ $ npm run start:dev
 $ npm run start:prod
 ```
 
+## Run App with Docker Compose
+
+```
+$ docker-compose up --build
+
+
+```
+
+## Swagger
+
+After running the app navigate to `http://localhost:3000/api`
+
 ## License
 
 Nest is [MIT licensed](LICENSE).
