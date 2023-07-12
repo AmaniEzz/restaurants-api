@@ -1,9 +1,12 @@
 # Stage 1: Build the application
 FROM node:16-alpine AS builder
 RUN apk add --no-cache libc6-compat
+# The built-in load-balancer provides networked Node.js applications (http(s)/tcp/udp server) to be scaled across all CPUs available,
+RUN npm install pm2 -g
 WORKDIR /app
 # Copy package.json and package-lock.json to the working directory
 COPY package*.json ./
+
 # Install dependencies
 RUN npm ci
 # Copy the entire project to the working directory
@@ -27,4 +30,4 @@ ENV NODE_ENV=production
 EXPOSE 3000
 
 # Start the Nest.js application
-CMD ["node", "dist/main"]
+CMD ["npm", "run", "start:prod" ]
